@@ -65,12 +65,13 @@ def email_brief(num: int = None, date: int = None) -> str:
     return "\n".join(email_info)  # Return concatenated email info 
 
 @mcp.tool
-def email_body(email_index: int) -> str:
+def email_body(email_index: int, date: int = None) -> str:
     """
     Reads the body of the email at the specified index.
 
     Args:
         email_index (int): The index of the email to read the body from.
+        date (int): The date to filter emails in the format YYYYMMDD. Default is None.
 
     Returns:
         str: The body of the email at the specified index.
@@ -80,6 +81,11 @@ def email_body(email_index: int) -> str:
     messages = inbox.Items
     messages.Sort("[ReceivedTime]", True)  # Sort by received time, descending
     
+    if date:
+        # Convert date parameter to datetime object for comparison
+        target_date = datetime.strptime(str(date), "%Y%m%d")
+        # Filter messages to only include those from the specified date
+        messages = [msg for msg in messages if msg.ReceivedTime.date() == target_date.date()]
     try:
         for i, message in enumerate(messages):
             if i == email_index:
